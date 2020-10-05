@@ -46,9 +46,11 @@ const userSchema = new mongoose.Schema(
     phone: {
       type: String,
       validate(value) {
-        if (value.length < 6 || value.length > 20) {
-          throw new Error("Phone must be between 6 and 20 characters long!");
-        }
+          if(!value == ""){
+            if (value.length < 6 || value.length > 20) {
+              throw new Error("Phone must be between 6 and 20 characters long!");
+            }  
+          }      
       },
     },
     status: {

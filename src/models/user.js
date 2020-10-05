@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
+      unique: true,
       required: true,
       trim: true,
       lowercase: true,
@@ -109,7 +110,6 @@ userSchema.statics.findByCredentials = async (email, password) =>{
   if (!user) {
       throw new Error('Unable to login')
   }
-  console.log('3')
   // Hashing FTW!!!
   const isMatch = await bcrypt.compare(password, user.password)
 

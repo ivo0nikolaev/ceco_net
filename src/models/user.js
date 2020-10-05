@@ -122,6 +122,21 @@ userSchema.statics.findByCredentials = async (email, password) =>{
   return user
 }
 
+//sets the toJSON, whicha automatically get's called by Express, when
+//sending back a JSON. Doing this for some sanitization
+userSchema.methods.toJSON = function(){
+  const user = this
+
+  // using toObject() to remove all the metadata that Mongoose adds
+  const publicUser = user.toObject()
+
+  delete publicUser.password
+
+  delete publicUser.tokens
+
+  return publicUser
+}
+
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;

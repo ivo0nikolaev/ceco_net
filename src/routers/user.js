@@ -16,6 +16,12 @@ router.post("/users", async (req, res) => {
   }
 });
 
+
+//Get User
+router.get("/users/me", auth, async (req, res) => {
+    res.send(req.user);
+  });
+
 //Login a User
 router.post("/users/login", async (req, res) => {
   try {

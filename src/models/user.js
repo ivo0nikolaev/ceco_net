@@ -1,48 +1,107 @@
 const mongoose = require("mongoose");
-const validator = require("validator")
+const validator = require("validator");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
+const secret = "SuperSecret";
 
-
-const User = mongoose.model('User', {
+const userSchema = new mongoose.Schema(
+  {
     name: {
-        type: String,
-        required: true,
-        trim: true
+      type: String,
+      required: true,
+      trim: true,
+      validate(value) {
+        if (value.length < 3 || value.length > 32) {
+          throw new Error(
+            "User name should be between 3 and 32 characters long!"
+          );
+        }
+      },
     },
     email: {
-        type: String,
-        required: true,
-        trim: true,
-        lowercase: true,
-        validate(value){
-            if(!validator.isEmail(value)){
-                throw new Error('Not a valid email')
-            }
+      type: String,
+      required: true,
+      trim: true,
+      lowercase: true,
+      validate(value) {
+        if (value.length > 64) {
+          throw new Error("Email should be no more than 64 charecters long!");
         }
+        if (!validator.isEmail(value)) {
+          throw new Error("Not a valid email");
+        }
+      },
     },
-    age:{
-        type: Number,
-        default: 0,
-        required: true,
+    age: {
+      type: Number,
+      default: 0,
+      validate(value) {
+        if (value < 0 || value > 120) {
+          throw new Error("Age must be between 0 and 120 years");
+        }
+      },
+    },
+    phone: {
+      type: String,
+      validate(value) {
+        if (value.length < 6 || value.length > 20) {
+          throw new Error("Phone must be between 6 and 20 characters long!");
+        }
+      },
+    },
+    status: {
+        type: String,
         validate(value) {
-            if(value < 0) {
-                throw new Error('Age must be a positive number')
-            }
+          if(value.length > 240) {
+              throw new Error("The status value cannto be bigger than 240 charactes!")
+          }
         }
-    },
+      },
     password: {
-        type: String,
-        required: true,
-        trim: true,
-        validate(value){
-            if(value.length < 8){
-                throw new Error('The password sould be at least 8 characters long')
-            }
-            if(value === "password"){
-                throw new Error('The password cannot be "password"!')
-            }
+      type: String,
+      required: true,
+      trim: true,
+      validate(value) {
+        if (value.length < 10 || value.length > 64) {
+          throw new Error("The password sould be between 10 and 64 characters!");
         }
-    }
-})
+        //Add a proper password validaiton on the fron-end!!
+        if (value === "password" || value === "pass") {
+          throw new Error(
+            "This password is too secure for our server to handle!"
+          );
+        }
+      },
+    },
+    tokens: [],
+  },
+  {
+    timestamps: true,
+  }
+);
 
-module.exports = User
+// Generates a JWT token for user, when user.JWT
+userSchema.methods.genAuth = async function () {
+  const token = jwt.sign({ _id: this.id.toString() }, secret);
+
+  this.tokens = this.tokens.concat({ token });
+  await this.save();
+
+  return token;
+};
+
+// HASHING the user.password
+// .pre runs when you call user.save() and checks if the password
+// has been modified (or just added for a new user) and hashes it
+userSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, 8);
+  }
+
+  next();
+});
+
+const User = mongoose.model("User", userSchema);
+
+module.exports = User;

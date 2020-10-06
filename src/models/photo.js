@@ -11,6 +11,10 @@ const photoSchema = new mongoose.Schema({
            }
        }
    },
+   visibility: {
+       type: Boolean,
+       default: false
+   },  
    description: {
      type: String,
      validate(value){

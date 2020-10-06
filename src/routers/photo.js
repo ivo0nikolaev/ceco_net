@@ -21,7 +21,7 @@ const upload = multer({
 
 //Upload a photo
 //TODO - Consider refactoring
-router.post("/photo", auth,upload.single("photo"),async (req, res) => {
+router.post("/photos", auth,upload.single("photo"),async (req, res) => {
     try {
         //Scope
         let body
@@ -32,11 +32,15 @@ router.post("/photo", auth,upload.single("photo"),async (req, res) => {
         res.status(500).send("You must provide a photo file");
       }
       const title = req.body.title;
+      let visibility
+      if(req.body.visibility){
+         visibility = req.body.visibility === 'true'
+      }
       const description = req.body.description;
       const owner = req.user._id;
-      const photo = await new Photo({ title, description, owner, body });
+      const photo = await new Photo({ title, visibility, description, owner, body });
       await photo.save();
-      res.send();
+      res.status(201).send();
     } catch (e) {
       await res.status(500).send(e);
     }

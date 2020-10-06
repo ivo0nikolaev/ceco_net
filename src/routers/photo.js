@@ -47,4 +47,20 @@ router.post("/photos", auth,upload.single("photo"),async (req, res) => {
   }
 );
 
+router.get("/photos/:id", auth, async (req, res) => {
+    try{
+        const photo = await Photo.findOne({ _id: req.params.id})
+        const isOwner = req.user.id === photo.owner
+        if(!photo.visibility){
+            if(!isOwner){
+            throw new Error()
+            }
+        }
+        res.set('Content-Type', 'image/jpg')
+        res.send(photo.body)
+    }catch(e){
+        console.log(e)
+        res.status(404).send()
+    }
+})
 module.exports = router;

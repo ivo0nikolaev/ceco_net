@@ -87,4 +87,15 @@ router.post("/users/logoutAll",auth , async (req, res) => {
   }
 });
 
+//Delete a user
+
+router.delete("/users/me", auth, async (req, res) => {
+  try{
+    await req.user.remove()
+    res.send(req.user)
+  }catch(e){
+
+  }
+})
+
 module.exports = router;

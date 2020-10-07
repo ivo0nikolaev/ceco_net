@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const Photo = require("./photo");
 
 const secret = "SuperSecret";
 
@@ -136,6 +137,14 @@ userSchema.methods.toJSON = function(){
 
   return publicUser
 }
+
+//Delete All photos when a user gets removed
+userSchema.pre('remove', async function (next) {
+
+  await Photo.deleteMany({ owner : this._id})
+  
+  next()
+})
 
 const User = mongoose.model("User", userSchema);
 

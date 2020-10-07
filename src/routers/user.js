@@ -1,6 +1,7 @@
 const express = require("express");
 const User = require("../models/user");
 const auth = require("../middleware/auth");
+const Photos = require("../models/photo")
 
 const router = new express.Router();
 
@@ -91,10 +92,12 @@ router.post("/users/logoutAll",auth , async (req, res) => {
 
 router.delete("/users/me", auth, async (req, res) => {
   try{
+
     await req.user.remove()
+
     res.send(req.user)
   }catch(e){
-
+    res.status(500).send()
   }
 })
 

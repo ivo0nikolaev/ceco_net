@@ -19,7 +19,7 @@ const port = process.env.PORT || 3000;
 const router = new express.Router()
 
 app.get('/test', (req, res) =>{
-  res.send('Cec-Net will send a Mr. Roboto to kill Sarah Conor')
+  res.send('Cec-Net will send Mr. Roboto to kill Sarah Conor')
 })
 
 //It auto-parses json requests.

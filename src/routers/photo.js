@@ -63,4 +63,18 @@ router.get("/photos/:id", auth, async (req, res) => {
         res.status(404).send()
     }
 })
+
+//Delete a photo
+
+router.delete('/photos/:id', auth, async (req, res) => {
+  try{
+    const photo = await Photo.findByIdAndDelete(req.params.id)
+    if(!photo){
+      return res.status(404).send();
+    }
+    res.send()
+  }catch(e){
+
+  }
+})
 module.exports = router;

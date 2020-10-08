@@ -40,7 +40,7 @@ router.post("/photos", auth,upload.single("photo"),async (req, res) => {
       const owner = req.user._id;
       const photo = await new Photo({ title, visibility, description, owner, body });
       await photo.save();
-      res.status(201).send();
+      res.status(201).send(photo._id);
     } catch (e) {
       await res.status(500).send(e);
     }

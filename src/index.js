@@ -31,3 +31,5 @@ app.use(photoRouter)
 app.listen(port, () => {
   console.log("Cec Net has become self aware on port: " + port);
 });
+
+//TEST

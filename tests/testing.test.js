@@ -1,3 +1,3 @@
-test('is Jest tunning', () =>{
+test('is Jest tunning 2', () =>{
 
 })

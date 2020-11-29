@@ -1,0 +1,20 @@
+-> Get mongoldb installer for Mac/Win/Linux: https://www.mongodb.com/try/download/community
+->Extract and rename the folder to “mongoldb”
+-> Move the new folder to your user directory (something like Users/ceco/mongodb (same for default Win/Mac/Linux)
+->Inside the user directory create “mongodb-data” so Users/ceco/mongodb-data
+
+How to run!
+
+/Users/{username}/mongodb/bin/mongod --dbpath=/Users/{username}/mongodb-data
+
+/Users/ceco/mongodb/bin/mongod --dbpath=/Users/ceco/mongodb-data
+
+
+More info:
+
+MongoDB runs on port 27017
+
+Databases are called “collections”
+Entries into the databases are called “documents” (it’s almost like a JSON object)
+
+https://robomongo.org/ - easy to use GUY to check on data. You can also use it to CRUD whatever you like.

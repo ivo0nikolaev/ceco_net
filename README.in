@@ -18,3 +18,99 @@ Databases are called “collections”
 Entries into the databases are called “documents” (it’s almost like a JSON object)
 
 https://robomongo.org/ - easy to use GUY to check on data. You can also use it to CRUD whatever you like.
+
+
+
+API:
+
+
+Create a user
+POST /users
+{
+ name,
+ email,
+ age,
+ phone,
+ status,
+ password
+}
+
+returns  { user, token} 
+
+GET /users/me
+-auth
+returns {user}
+
+PATCH /users/me 
+-  auth
+{
+ name,
+ email,
+ age,
+ phone,
+ status,
+ password
+}
+
+returns the new updated {user}, if all passes validation
+
+
+POST /users/login
+{
+email,
+password
+}
+returns { user, token }
+
+
+POST /users/logout 
+-  expects a token
+- deletes the current token from the DB
+
+POST /users/logoutAll
+- auth
+- deletes ALL the tokens for that user
+
+DELETE /users/me
+- expects a token
+- returns { user } and the user is deleted form the db.
+
+
+PHOTOS:
+
+POST /photos
+- auth
+form-data:
+	photo: file
+	title: string
+	description: string
+	visibility boolean
+return { id } // the id of the photo as a string
+
+GET photos/:id
+- if the photo is set to visible:true, it will be downloaded with or without a token
+- if the photo is set to visible:false, and no valid token is provided, it will return 404
+
+DLETE photos/:id
+- auth
+- deletes the photo from DB.
+
+
+Examples:
+
+Create user :
+{{url}}/users:
+{
+    "name": “Cec-User1”,
+    "email": "cec1@gmail.com",
+    "password": "nv710ny09amyw"
+}
+
+User login:
+{{url}}/users/login
+{
+    "email": "cec1@gmail.com",
+    "password": "nv710ny09amyw"
+}
+
+

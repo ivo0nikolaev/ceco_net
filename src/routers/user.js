@@ -2,7 +2,9 @@ const express = require("express");
 const User = require("../models/user");
 const auth = require("../middleware/auth");
 const Photos = require("../models/photo")
+const http = require("http")
 
+const socketIo = require("socket.io")
 const router = new express.Router();
 
 //Create User
@@ -10,9 +12,11 @@ router.post("/users", async (req, res) => {
   try {
     const user = await new User(req.body);
     const token = await user.genAuth();
+    console.log('user stuff', token)
     await user.save();
     res.status(201).send({ user, token });
   } catch (e) {
+    console.log('e', e)
     res.status(400).send(e);
   }
 });
@@ -55,9 +59,11 @@ router.post("/users/login", async (req, res) => {
       req.body.email,
       req.body.password
     );
+    console.log('user', user)
     const token = await user.genAuth();
     res.send({ user, token });
   } catch (e) {
+    console.log('err', e)
     res.status(400).send();
   }
 });
@@ -96,6 +102,36 @@ router.delete("/users/me", auth, async (req, res) => {
     await req.user.remove()
 
     res.send(req.user)
+  }catch(e){
+    res.status(500).send()
+  }
+})
+
+router.delete("/users/connect", auth, async (req, res) => {
+  try{
+    let interval;
+
+    const server = http.createServer(app)
+    const io = socketIo(server)
+    
+    io.on("connection", (socket) => {
+      console.log("New client connected")
+      if (interval) {
+        clearInterval(interval)
+      }
+      interval = setInterval(() => getApiAndEmit(socket), 1000)
+      socket.on("disconnect", () => {
+        console.log("Client disconnected")
+        clearInterval(interval)
+      })
+    })
+    
+    const getApiAndEmit = socket => {
+      const response = new Date();
+      // Emitting a new message. Will be consumed by the client
+      socket.emit("FromAPI", response);
+    };
+    
   }catch(e){
     res.status(500).send()
   }

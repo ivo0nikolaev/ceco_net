@@ -52,14 +52,14 @@ router.get("/photos/:id", auth, async (req, res) => {
         const photo = await Photo.findOne({ _id: req.params.id})
         const isOwner = req.user.id === photo.owner
         if(!photo.visibility){
-            if(!isOwner){
+          if(!isOwner){
             throw new Error()
             }
         }
         res.set('Content-Type', 'image/jpg')
-        res.send(photo.body)
+        res.send(photo)
     }catch(e){
-        console.log(e)
+        console.log('errorrr', e)
         res.status(404).send()
     }
 })

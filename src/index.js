@@ -2,11 +2,12 @@ const express = require("express")
 
 const http = require("http")
 
+require('dotenv').config()
 
 const mongoose = require("mongoose")
 const cors = require("cors")
 
-mongoose.connect("mongodb://localhost:27017/ceco-api", {
+mongoose.connect(process.env.MONGODB_CLUSTER, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useUnifiedTopology: true,
@@ -24,7 +25,7 @@ const server = http.createServer(app)
 // const io = socketIo(server)
 const io = require("socket.io")(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: process.env.FRONTEND_URL,
     methods: ["GET", "POST"],
     // allowedHeaders: ["my-custom-header"],
     credentials: true
@@ -33,16 +34,13 @@ const io = require("socket.io")(server, {
 let interval
 
 io.on("connection", (socket) => {
-  console.log("New client connected")
   const id = socket.handshake.query.id
   socket.join(id)
   socket.on('send-message', ({ recipients, text }) => {
-    console.log('sending message', recipients, text)
     recipients.forEach(recipient => {
       const newRecipients = recipients.filter(r => r !== recipient)
       newRecipients.push(id)
 
-      console.log('sendiong message to ', recipient, text)
       socket.broadcast.to(recipient).emit('receive-message', {
         recipients: newRecipients, sender: id, text
       })
@@ -69,7 +67,7 @@ server.listen(3002, () => console.log(`Listening on port ${3002}`))
 const router = new express.Router()
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.FRONTEND_URL,
   })
 )
 app.get("/test", (req, res) => {

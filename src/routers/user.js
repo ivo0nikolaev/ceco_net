@@ -12,11 +12,10 @@ router.post("/users", async (req, res) => {
   try {
     const user = await new User(req.body);
     const token = await user.genAuth();
-    console.log('user stuff', token)
     await user.save();
     res.status(201).send({ user, token });
   } catch (e) {
-    console.log('e', e)
+    // console.log('e', e)
     res.status(400).send(e);
   }
 });
@@ -59,11 +58,10 @@ router.post("/users/login", async (req, res) => {
       req.body.email,
       req.body.password
     );
-    console.log('user', user)
     const token = await user.genAuth();
     res.send({ user, token });
   } catch (e) {
-    console.log('err', e)
+    // console.log('err', e)
     res.status(400).send();
   }
 });
@@ -115,13 +113,11 @@ router.delete("/users/connect", auth, async (req, res) => {
     const io = socketIo(server)
     
     io.on("connection", (socket) => {
-      console.log("New client connected")
       if (interval) {
         clearInterval(interval)
       }
       interval = setInterval(() => getApiAndEmit(socket), 1000)
       socket.on("disconnect", () => {
-        console.log("Client disconnected")
         clearInterval(interval)
       })
     })
